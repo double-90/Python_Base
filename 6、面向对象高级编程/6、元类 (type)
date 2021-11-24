@@ -1,0 +1,45 @@
+### 探索创建 class 的本质
+
+
+
+## 创建类（常用）
+
+
+class Student(object):
+    def learn(self):
+        print('努力学习，天天进步')
+
+
+print(type(Student))        # <class 'type'>                Student 类的类型是type
+print(type(Student()))      # <class '__main__.Student'>    Student() 实例的类 类型是 '__main__.Student'
+
+
+
+
+## 创建类（实际)
+
+
+def func(self):
+    print('努力学习，天天进步')
+
+
+Student1 = type('Student1', (object, ),   dict(learn=func))         # 参数：class的名称； 继承的父类集合( 如果只有一个父类，别忘了tuple的单元素写法);  class的方法名称与函数绑定
+
+s1 = Student1()
+s1.learn()
+
+print(type(Student1))        # <class 'type'>                
+print(type(Student1()))      # <class '__main__.Student'>    
+
+
+
+
+
+
+### 通过type()函数创建的类和直接写class是完全一样的，因为Python解释器遇到class定义时，仅仅是扫描一下class定义的语法，然后调用type()函数创建出class
+
+
+
+
+
+

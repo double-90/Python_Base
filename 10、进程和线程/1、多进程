@@ -1,0 +1,98 @@
+### 创建子进程, Process
+
+
+from multiprocessing import Process
+import os
+
+
+def run_proc(name):
+    print('Run child process %s (%s)...' % (name, os.getpid()))
+
+
+if __name__ == '__main__':
+
+    print('Parent process %s.' % os.getpid())
+
+    p = Process(target=run_proc, args=('test',))    # 创建子进程 Process(执行函数，参数)
+
+    print('Child process will start.')
+    p.start()                                       # 子进程启动
+    p.join()                                        # 等待子进程结束后再继续往下运行，常用于进程间的同步
+    print('Child process end.')
+
+
+
+
+
+
+
+### 批量创建子进程, Pool
+
+
+from multiprocessing import Pool
+import os, time, random
+
+
+def worker(msg):
+    print('%s 开始执行，进程号为 %d' % (msg, os.getpid()))
+
+    t_start = time.time()
+    time.sleep(random.random() * 2)
+    t_end = time.time()
+
+    print('%s 执行完毕，共耗时 %.2f' % (msg, t_end-t_start))
+
+
+if __name__ == '__main__':
+    print('父程序进程号%d' % os.getpid())
+    p = Pool(6)                             # 进程池大小
+    for i in range(7):
+        p.apply_async(worker, args=(i,))    # 进程池空闲下来的子进程去调用目标
+
+    print('等待所有进程执行完毕！')
+    p.close()                               # 关闭进程池，进程池不再进入新的程序
+    p.join()                                # 等待所有进程执行完毕，再执行后面的语句，必须放在close语句之后
+    print('所有进程已执行完毕')
+
+
+
+
+
+
+
+
+### 进程间通信 multiprocessing 模块的 Queue
+
+
+from multiprocessing import Process, Queue
+import os, time, random
+import queue
+
+
+def p_write(q):
+
+    print('当前进程号%d'%(os.getpid()))
+
+    for i in ['A', 'B', 'C']:
+        print('获取数据{0}'.format(i))
+        q.put(i)
+        time.sleep(random.random())
+
+def p_read(q):
+
+    print('当前进程号%d'%(os.getpid()))
+    while True:
+        i = q.get(True)
+        print(f'读取数据{i}')
+
+
+if __name__ == '__main__':
+    q = Queue()             
+    pw = Process(target=p_write, args=(q,))
+    pr = Process(target=p_read, args=(q,))
+
+    pw.start()
+    pr.start()
+    pw.join()
+
+    pr.terminate()

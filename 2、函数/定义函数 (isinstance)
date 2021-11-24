@@ -1,0 +1,26 @@
+### 函数
+
+## 函数体内部的语句在执行时，一旦执行到return时，函数就执行完毕，并将结果返回
+
+
+## 导入函数     from abstest import my_abs     
+
+
+## 空函数       def h():  pass
+
+
+## 函数返回多个值，实际上是返回了一个 tuple
+
+
+
+
+## 内置函数 isinstance(obj,classinfo)，判断对象是否为指定的类型之一
+
+
+如 a = 2
+
+   isinstance (a,int)     True
+
+   isinstance (a,(str, int, list))    # 是元组中的一个，返回 True
+  
+

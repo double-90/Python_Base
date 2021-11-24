@@ -1,0 +1,182 @@
+### 参数定义的顺序必须是：必选参数、默认参数、可变参数、命名关键字参数和关键字参数
+
+
+
+
+## 默认参数，默认参数是有默认值的，默认参数为空时，得到默认值
+
+
+# 实例0：默认参数要牢记一点：默认参数必须指向不变对象！
+
+
+def end(L=[]):          # 这里L指向了[]的内存地址
+    L.append("End")
+    return L
+
+
+end()       # ['End']   
+end()       # ['End', 'End']
+end()       # ['End', 'End', 'End']
+
+
+# 默认参数是[]，但是函数似乎每次都“记住了”上次添加了'END'后的list
+
+# 先理解一个概念：Python的默认参数只会在函数定义时被确定，而不是每次调用时重新确定
+
+
+
+
+
+
+
+# 实例1
+
+def a(x,n=2)
+    s=1
+    while n>0:
+    n=n-1
+    s=s*x
+    return s
+
+a(5)    25
+a(5,2)  25
+a(5,3)  125
+
+
+
+
+# 实例2
+
+def stu(name, gender, age=6, city="深圳"):
+    print(f"{name},{gender},{age},{city}")
+
+
+stu("xiaomi", "F")
+stu("xiaovo", "F", 5)
+stu("xiaowei", "M", city="北京")                # 当不按顺序提供部分默认参数时，需要把参数名写上
+
+
+
+
+
+
+## 可变参数，就是传入的参数个数是可变的，可以是1个、2个到任意个，还可以是0个，这些可变参数在函数调用时自动组装为一个tuple
+
+## 个人理解：就是将多个参数整合成一个list参数，
+            如果传入一个列表参数，则在列表前加个*号
+
+
+# 实例1
+
+def calc(*nums):    
+    sum = 0
+    for n in nums:
+        sum = sum + n
+    return sum
+
+
+
+# 普通调用,需要先组装出一个list或tuple
+calc([1, 2, 3])  
+
+
+
+# 使用可变参数，在参数前面加了一个*号,在函数内部，参数nums接收到的是一个tuple，即使将分散的参数看成一个整体
+calc(1, 2, 3)   
+
+
+
+# 如果已经有一个list或者tuple，要调用一个可变参数怎么办？ Python允许你在list或tuple前面加一个*号，把list或tuple的元素变成可变参数传进去
+L = [1, 2, 3]
+calc(*L)
+
+
+
+
+
+
+## 关键字参数：参数允许你传入0个或任意个含参数名的参数，这些关键字参数在函数内部自动组装为一个dict
+
+
+
+def person(name,age,**k):
+    print('name:', name, 'age:', age, 'other:', k)
+
+
+
+# 插入任意个数的关键字参数
+
+person('wang', 18)    # name: wang age: 18 other: {}
+
+person('yuan', 20, city='Beijing')    # name: yuan age: 20 other: {'city': 'Beijing'}
+
+person('li', 23, city='shenzhen', job='Engineer')    # person('li', 23, city='shenzhen', job='Engineer')
+
+
+
+
+# 也可以组装出一个 dict，在将 dict 转换为关键字参数传进去
+
+extra = {'city':'Beijing', 'job':'Engineer'}'
+
+person('sun', 21, **extra)
+
+
+
+
+
+
+## 命名关键字:参数需要一个特殊分隔符*，*后面的参数被视为命名关键字参数
+             如果前面有可变参数，则不用 * 号
+
+
+
+# 即限制关键字参数，只接收city和job作为关键字参数
+
+def person(name, age, *, city, job) 
+    print(f'name:{name}, age:{age}, city:{city}, job:{job}')
+
+
+
+# 命名关键字参数必须传入参数名,如果缺少参数名，解释器把这4个参数均视为位置参数
+
+person('lv', 25, 'shanghai', 'none')    # 错误
+person('yi', 28, city='shenzhen', job='IT')  #正确写法
+
+
+
+# 如果函数定义中已经有一个可变参数，后面跟着的命名关键字不用特殊分隔符 *
+
+def person(name, age, *args , city, job) 
+    print(f'name:{name}, age:{age}, args, city:{city}, job:{job}')
+
+
+
+# 命名关键字参数可以有缺省值
+
+def person(name, age=18, *, city='Beijing', job):
+    print(name, age, city, job)
+
+person('lin', 26, job='boss')
+
+
+
+
+
+
+# 例子
+
+
+def add(stu, job="Student", *args, score=123, university):
+    if job == "Student":
+        print(f'{stu}同学，恭喜你以优异的成绩（{score}）成功考进了{university}大学\n')
+        for i in args:
+            print("选修科目如下：{0}".format(i))
+        return None
+    print("这是学生查询系统，请出示相关学生账号信息")
+
+
+add("袁卓耿", "Student", "计算机应用技术", "C#", "大学英语", "Mysql", score=666, university="格物致知")
+
+a = ["计算机应用技术", "C#", "大学英语", "Mysql"]
+add("袁卓耿", "x", *a, score=666, university="格物致知")

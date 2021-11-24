@@ -1,0 +1,73 @@
+# 当 for 循环内嵌套了函数声明，且函数中引用for循环的变量，但是没有及时调用函数，就会出现以下情况
+
+
+
+
+
+## 闭包
+
+def func():
+    L = []
+    for i in range(3):
+        def func1():
+            return "func：{0}".format(i * i)
+        L.append(func1)
+    return L                # 这里 func() 返回的列表 L
+
+
+
+f1, f2, f3 = func()         # 等价于 f1 = L[0]，f2 = L[1]， f3 = L[2]
+
+print(f1())     # f1()=func1()，注意当调用函数 func1 时，它才会去调用 func() 提供的变量 i
+print(f2())     # 4
+print(f3())     # 4
+
+
+
+
+
+## 列表生成式
+
+L = [lambda:f"lambda:{i * i} " for i in range(3)]
+
+f4, f5, f6 = L
+
+print(f4())     # 4
+print(f5())     # 4
+print(f6())     # 4
+
+
+
+
+
+### 无论是闭包还是列表生成式，只要返回的函数引用了外部循环的变量，且没有立即执行，就会出现该现象
+
+
+
+for i in range(3):
+    def fuc():                      # 定义了变量
+        print("for:%d" % (i*i))     
+
+
+
+print(i)    # for 循环结束后，才调用了函数，这时外部变量i已经为2了
+fuc()       # 4
+fuc()       # 4
+
+
+
+
+## 猜测：函数定义时并不会保存外部变量的值，只有当函数执行时，才会去获取外部变量的值
+
+## 验证：
+
+i = 0
+
+def func(n):
+
+    return i * i
+
+i = 1
+
+print(func(i))
+

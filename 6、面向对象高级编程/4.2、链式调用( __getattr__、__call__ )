@@ -1,0 +1,82 @@
+### __getattr__ 
+
+## 如果属性查找（attribute lookup）实例以及对应的类中（通过__dict__)失败，
+## 那么会调用到类的 __getattr__ 函数
+
+
+## 即获取该实例不存在的属性的值，就会去调用 __getattr__，
+## 我们则可以自定义__getattr__应该实现什么功能（例如报错，返回预先设定好的值等等）
+
+
+
+### 例1
+
+class Chain(object):
+
+    def __init__(self, path=''):
+        self._path = path
+
+    def __getattr__(self, path):
+        return Chain('%s/%s' % (self._path, path))
+
+    def __str__(self):
+        return self._path
+
+    __repr__ = __str__
+
+
+
+print(Chain().status.user.timeline.list)
+
+# Chain().status    return Chain('/status')
+# Chain().status.user   Chain('/status').user   return Chain('/status/user')
+# Chain().status.user.timeline  ...  Chain('/status/user').timeline  return Chain('/status/user/timeline)
+# Chain().status.user.timeline.list ... Chain('/status/user/timeline).list 
+
+# 输出结果 /status/user/timeline/list
+
+
+
+
+
+### 例2
+
+class Chain(object):
+
+    def __init__(self, path=''):
+        self._path = path
+
+    def __getattr__(self, a):
+        return Chain("{0}\\{1}".format(self._path, a))
+
+    def __str__(self):
+        return self._path
+
+    def __call__(self, b):
+        return Chain("{0}\\{1}".format(self._path, b))
+
+    __repr__ = __str__
+
+
+print(Chain().fc1.fc2('123').fc3)
+
+
+
+## 链式调用
+
+
+## __getattr__(self, attr)  当实例获取不存在的属性值时，会调用该方法，并且会将该属性名以参数的形式传入
+
+## __call__(self, args*, kw**)  直接调用实例时，会执行该方法
+
+
+
+# Chain()   实例化
+
+# Chain().fc1   -->  __getattr__:   --> return  Chain('/fc1')
+
+# Chain('/fc1').fc2 --> __getattr__:  --> return  Chain('/fc1/fc2') 
+
+# Chain('/fc1/fc2')('123')  --> __call__ :  --> return  Chain('/fc1/fc2/123')
+
+# Chain('/fc1/fc2/123') --> __getattr__:  --> return  Chain('/fc1/fc2/123/fc3')

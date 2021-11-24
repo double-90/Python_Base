@@ -1,0 +1,93 @@
+### 断言  assert
+
+
+def func(s):
+
+    i = int(s)
+    assert i != 0, "i is zero!!!"       # 断言 i 不等于 0，当 i 等于 0 时就会抛出错误AssertionErrorm！
+    return 10 / i               
+
+
+func(0)         # AssertionErrorm, i is zero!!!
+
+
+
+## 启动Python解释器时可以用-O参数来关闭assert
+
+
+
+
+
+### logging 
+
+## 日志级别： DEBUG < INFO < WARNING < ERROR < CRITICAL
+
+
+import logging
+
+
+logging.basicConfig(level=logging.INFO)         # 配置日志级别为INFO，即最少达到INFO级别的事件才会被记录
+
+i = 1
+
+logging.debug(f'{i}')                           # debug 级别，不会被触发！
+logging.info('{0}'.format(i))                   # INFO:root:1
+logging.warning('%s'% i)                        # WARNING:root:1
+
+
+## 使用场景，可以在调试时，记录下某个变量在某个位置的值，进而找出错误！
+
+
+
+
+
+
+### pdb 调试器
+
+
+### 单步调试
+
+## 进入pdb调试：       python -m pdb 文件.py
+
+## 单步执行代码：       n
+
+## 定位目前代码：       l
+
+## 查看当前变量：       p [变量]
+
+## 退出：              q
+
+
+## 通过pdb在命令行调试的方法理论上是万能的，但实在是太麻烦了，如果有一千行代码，要运行到第999行得敲多少命令
+
+
+
+
+
+### pdb.set_trace()   断点
+
+
+import pdb
+
+
+def func(s):
+
+    i = int(s)
+
+    pdb.set_trace()     # 设置断点，运行到这里会自动暂停
+
+    return 10 / i       # 继续运行到这一步，报错ZeroDivisionError: division by zero
+
+print(func(0))          
+
+
+
+## 程序会自动在pdb.set_trace()暂停并进入pdb调试环境
+
+## 继续运行：           c
+
+
+
+
+
+

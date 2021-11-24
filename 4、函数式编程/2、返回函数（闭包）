@@ -1,0 +1,131 @@
+### 闭包
+
+## 在一个函数中定义了一个内函数
+## 内函数里引用了函数的参数或局部变量
+## 并且函数的返回值是内函数的引用，这样就构成了一个闭包。
+
+
+
+
+# 如引用 lazy_sum函数 的参数
+
+
+def lazy_sum(*args):
+    def sum():
+        a = 0
+        for n in args:
+            a = a + n
+        return a
+    return sum
+
+
+L = [x for x in range(0, 6)] 
+
+fc = lazy_sum(*L)
+
+print(fc())
+
+
+
+
+
+# 引用 lazy_sum函数 的局部变量
+
+
+def line_conf():
+    a = 1
+    b = 2
+ 
+    def line(x):
+        return a * x + b        
+ 
+    return line
+
+
+c = line_conf()
+
+print(c(2))     # 4
+
+
+
+
+
+## 注意：当我们调用lazy_sum()时，每次调用都会返回一个新的函数，即使传入相同的参数
+
+c1 = line_conf()
+c2 = line_conf()
+
+print(c1 == c2)   # False
+
+
+
+
+
+## 注意：返回的函数并没有立刻执行，而是直到调用了f()才执行
+
+list1 = []
+
+for i in range(3):     # 0 1 2
+    def func(a):
+        return a + i
+    list1.append(func)        
+
+print(i)            # 2
+
+for n in list1:       
+    print(f(1))     # 3 3 3   执行函数时，i的值为2
+
+
+
+
+
+## 注意：如果在函数内，有同名变量进行赋值，则在赋值（初始化）之前，不能使用该变量，会引起错误
+
+
+# 例子： 
+
+x = 10
+def bar():
+    print(x)            # 外部x被隐藏，内部变量还未初始化
+    x += 1              # 变量初始化
+
+
+
+
+
+
+## 可使用 nonlocal 关键字声明变量，声明变量为外部嵌套函数内的变量
+
+
+def outdef ():
+
+    name = "name 变量"      ## 外部嵌套（outdef）函数的变量
+
+    def indef():
+
+        nonlocal name           # 声明非局部变量，而是外部嵌套函数内的变量
+
+        print(name)             # name 变量
+
+        name += "！"            # 对变量进行修改
+
+        print(name)             # name 变量！
+
+        return ''
+
+    return indef
+
+
+i = outdef()
+
+print(i())          # indef() ，执行该函数，外部变量值为：name 变量！
+
+print(i())          # indef() ，执行该函数，外部变量值为：name 变量！！
+
+
+
+
+参考资料：https://blog.csdn.net/sc_lilei/article/details/80464645
+         https://www.liaoxuefeng.com/wiki/1016959663602400/1017434209254976#0
+         https://docs.python.org/zh-cn/3/faq/programming.html#why-am-i-getting-an-unboundlocalerror-when-the-variable-has-a-value
+

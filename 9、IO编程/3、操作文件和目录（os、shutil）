@@ -1,0 +1,118 @@
+## 环境变量：在操作系统中定义的环境变量，全部保存在os.environ这个变量中
+
+
+# 获取系统所有环境变量
+
+print(os.environ)
+
+
+# 获取某个环境变量的值，如 Path
+
+print(os.environ.get('Path'))
+
+
+
+
+
+## 操作文件和目录
+
+# 列出当前目录下的所有文件和目录
+
+print(os.listdir())
+
+
+
+# 查看当前目录的绝对路径
+
+print(os.path.abspath('.'))
+
+
+
+# 创建一个新目录
+
+os.mkdir(r'E:\Project\VS Code\Code set\haha.py')
+
+
+
+# 删除一个目录
+
+os.rmdir(r'E:\Project\VS Code\Code set\haha.py')
+
+
+
+# 文件重命名
+
+os.rename('hello.py', 'test.py')
+
+
+
+# 删除文件
+
+os.remove('test.py')
+
+
+
+# 复制文件，shutil模块提供了copyfile()的函数，可以将shutil模块看做是os模块的补充。
+
+import shutil
+
+shutil.copyfile('test.py', 'hello.py')
+
+
+
+
+
+## 以下操作不会影响到实际文件
+
+
+
+# 对字符串进行合并
+
+os.path.join(r'E:\Project\VS Code\Code set','haha')
+
+
+# 对字符串进行拆分（把一个路径拆分为两部分，后一部分总是最后级别的目录或文件名）
+
+os.path.split(r'E:\Project\VS Code\Code set\haha.py')               # 'E:\Project\VS Code\Code set', 'haha.py'
+
+
+# 对字符串进行拆分（得到文件扩展名）                                
+
+os.path.splitext(r'E:\Project\VS Code\Code set\haha.py')            # r'E:\Project\VS Code\Code set\haha', '.py'
+
+
+
+
+
+
+## 示例
+
+
+## 列出当前目录下的所有目录
+
+L = [x for x in os.listdir('.') if os.path.isdir(x)]
+
+
+## 列出所有的.py文件
+
+L1 = [x for x in os.listdir('.') if os.path.isfile(x) and os.path.splitext(x)[1] == '.py']
+
+
+
+
+
+
+def FilePath(path, s):
+
+        f = [x for x in os.listdir(path) if os.path.isfile(os.path.join(path, x)) and s in x]           # 找出包含指定字符串的文件
+
+        for i in f:
+            files.append(os.path.join(path, i))                                                          # 将符合条件的文件放在列表里
+        
+        d = [x for x in os.listdir(path) if os.path.isdir(os.path.join(path, x))]
+
+        for n in d:
+            d_path = os.path.join(path, n)
+            FilePath(d_path, s)
+        
+        return files

@@ -1,0 +1,22 @@
+当默认参数使用默认值时，导致可变参数的数值的第一个参数值传递给了默认参数
+
+
+def stu(name, gender="F", *args):
+    print("name:%s" % name)
+    print("gender:%s" % gender)
+    for i in args:
+        print(i)
+
+
+
+a = [1, 2, 3]
+
+stu('格物致知', *a)
+
+#   name:格物致知
+#   gender:1        这里本应该是使用默认参数值，结果却获取了可变参数的第一位
+#   2
+#   3
+
+
+

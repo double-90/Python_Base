@@ -1,0 +1,70 @@
+### 实例属性属于各个实例所有，互不干扰；
+
+### 类属性属于类所有，所有实例共享一个属性；
+
+
+class Student(object):
+    count = 0
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        Student.count += 1          # 对类属性的值进行修改
+
+
+
+
+# 类属性的修改，会影响到所有实例
+
+s = Student('小1', 18)
+print(s.count)              # count = 1
+
+s1 = Student('小2'， 20)
+print(s.count)              # count = 2     
+print(s1.count)             # count = 2
+
+
+
+
+
+# 给实例绑定一个属性（只对该实例生效）
+
+s.gender = '男'
+
+print(s.gender)             # 男
+
+
+
+
+
+# 给实例绑定一个方法（只有该实例生效）
+
+from types import MethodType
+
+
+def set_gender(self, gender):
+    self.gender = gender
+
+
+
+s1.set_gender = MethodType(set_gender, s1)
+
+s1.set_gender('女')
+
+print(s1.gender)
+
+s.set_gender('女')          # 报错，AttributeError
+
+
+
+
+## 给类Class绑定了方法后，所有实例均可调用
+
+
+Student.set_gender = set_gender
+
+s.set_gender('女') 
+
+print(s.gender)             # 女
+
+

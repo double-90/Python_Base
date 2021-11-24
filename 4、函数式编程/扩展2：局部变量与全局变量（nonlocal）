@@ -1,0 +1,229 @@
+### 全局变量：定义在函数外的变量，作用域范围为全局
+### 局部变量：定义在函数内部的变量，作用域范围为函数内部
+
+
+
+## 函数内部将变量隐式视为全局变量
+
+## 所以在函数内部任何位置为变量赋值
+
+## 除非明确声明为全局变量，否则均将其视为局部变量
+
+
+
+
+
+# 例0：函数内可以使用全局变量
+
+y = 1
+
+def func():
+    print(y)    # 打印出全局变量 x
+
+func()       # 1
+
+
+
+
+# 例1：局部变量的修改，不会对全局变量造成影响
+
+
+x = 1               # 全局变量
+y = 1
+
+def func1():         
+
+    x = y + 2           # 局部变量 x
+
+    print(x)        # 3，局部变量优先级高于全局变量
+
+
+func1()   # 3
+
+print(x)  # 1
+
+
+
+
+
+# 例2：对 func2、func3 函数内的变量进行赋值时，该变量将成为该作用域内的局部变量，并覆盖外部作用域中的同名变量
+
+
+x = 1           # 全局变量
+
+def func2():
+
+    print(x)    # 试图输出未初始化的局部变量，就会引发错误
+
+    x = 2       # 局部变量 x
+
+
+def func3():
+
+    x = x + 1   # 局部函数 x 初始化，初始化时调用自己，引发错误
+    
+    print(x)
+
+
+func2()  # 抛出错误UnboundLocalError
+func3()  # 抛出错误UnboundLocalError
+
+
+
+
+
+# 例3：函数内修改全局变量，需要先明确声明
+
+
+x = 1               # 全局变量
+
+def func3():
+    global x        # 声明为全局变量
+    x = 2           
+    print(x)
+
+
+print(x)    # 1     函数执行前
+func3()     # 2     函数执行后
+print(x)    # 2     全局变量 x = 2
+
+
+
+
+## 特殊情况：global 变量 只要出现在函数中，即便没有执行也会将函数内的变量赋值视为全局变量
+
+
+x = 0
+
+
+def func333():
+    if False:           # False，if 语句不执行
+        global x
+    x = 1
+    return x
+
+
+print(x)    # 0
+func333()
+print(x)    # 1
+
+
+
+
+# 例3-1：嵌套函数，内函数修改外部函数变量，需要明确声明（nonlocal）
+
+
+def func3_out_1():
+    x = 1
+    def func3_in_1():
+        nonlocal x      # nonlocal：获取上一级函数的局部变量，即 func3_out_1 的
+        x = 2
+        print(x)        # 2
+    print(x)            # 1，内函数 func3_in_1() 还未被调用，所以值还未被修改
+
+    return func3_in_1
+
+fc3_in = func3_out_1()
+fc3_in()        # 1 2  
+
+
+
+
+# 例4：list 局部变量的修改，不会对全局变量造成影响
+
+L = [0]
+
+
+def func4():
+    L = [1]
+    print(L)
+
+
+func4()          # [1]
+print(L)         # [0]
+
+
+
+
+
+# 例4-2：list、dict 修改全局变量时，无需明确声明
+
+
+L = [3]
+
+
+def func4_2():
+    L.append('i')
+    print(L)       # [3,i]
+
+
+print(L)           # [3]
+func4_2()
+print(L)           # [3,i]
+
+
+L1 = [3]
+
+
+def func4_2_1():
+    L1[0] += 1
+    print(L1)      # [4]
+
+
+print(L1)          # [3]
+func4_2_1()
+print(L1)          # [4]
+
+
+
+
+
+
+# 例5：如有明确声明，函数内的变量只在其作用域内生效，即便修改也不会影响外部同名变量
+
+
+x = [0]
+
+
+def func5():
+    x = [0, 1]
+
+    def func5_in():
+        x = [1, 2]
+        return x
+    func5_in()          # [1,2] 内函数局部变量
+    print(x)            # [0,1] 主函数局部变量
+    return func5_in
+
+
+fc5_in = func5()
+print(fc5_in())
+print(x)                # [0]   全局变量
+
+
+
+
+
+### 1、为什么例2、例3中的变量需要明确声明？
+
+
+## 这是因为函数中的 x = 1 这句代码有歧义，它既可以表示是引用全局变量x，也可以是创建一个新的局部变量x
+
+## 所以默认情况下，函数内的变量都隐式视为全局变量，需要明确声明才是全局变量（嵌套函数也是类似情况）
+
+
+
+
+### 2、那为什么例4、例5却不用？
+
+
+## 而函数中的 L[0] = 1 或 L.append 都是"明确的"，即表示引用全局变量 L
+
+## 函数中的 L = [0]，也是"明确的"，表示创建一个新的局部变量 L
+
+## 所以并不需要明确声明
+
+
+参考资料：https://www.jb51.net/article/86765.htm
+         http://yangyingming.com/article/19/
+         https://docs.python.org/zh-cn/3/faq/programming.html#why-am-i-getting-an-unboundlocalerror-when-the-variable-has-a-value

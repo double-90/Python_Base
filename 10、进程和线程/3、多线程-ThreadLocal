@@ -1,0 +1,97 @@
+## ThreadLocal
+
+
+## 个人感悟：1、首先，多线程指在一个进程中有多个线程同时进行工作，而线程之间的内存地址是共享的，也就是说在多线程中，所有变量都由所有线程共享
+
+            2、线程在使用局部变量时，是不会影响到其他线程的
+            
+            3、线程共享变量固然不好，但也造就了另一个用法，就是使用一个dict的全局变量，将各自线程上的数据，以 dict[线程] = 数据，进行赋值
+
+                将其想象为一个澡堂的衣柜（dict），每个衣柜都要通过钥匙（线程自身）开锁才能拿到里面的东西（数据）
+                所以每个线程都能通过自己取到各自的数据
+
+            4、
+
+
+
+
+## 但局部变量也有问题，就是在函数调用的时候，传递起来很麻烦：
+
+
+import threading
+
+
+def process_student(name):
+
+    std = Student(name)     # std是局部变量，但是每个函数都要用它，因此必须传进去：
+    do_task(std)
+
+def do_task(std):
+    pass
+
+
+
+
+
+## 若用一个全局dict存放各自Student对象，然后以thread自身作为key 获得线程对应的Student对象
+
+
+global_dict = {}
+
+def std_thread(name):
+
+    std = Student(name)                                 
+    global_dict[threading.current_thread()] = std       # 通过当前thread作为key，将std放到全局变量global_dict中
+
+    do_task()
+
+
+def do_task():
+    # 不传入std，而是根据当前线程查找：
+    student = global_dict[threading.current_thread()]
+
+
+## 优点是消除了std对象在每层函数中的传递问题，但是代码还是比较繁琐
+
+
+
+
+
+
+## ThreadLocal应运而生，不用查找dict，ThreadLocal帮你自动做这件事
+
+
+
+l_thread = threading.local()    # 创建全局threadlocal对象
+
+
+def local_std():
+
+    std = l_thread.name         # 获取全局对象中对应的值
+
+    for i in range(5):
+        print('线程%s正在加载 >>>%d ' % (threading.current_thread().name, i))
+        time.sleep(1)
+
+    print('本线程%s目前被学生：%s 占用' % (threading.current_thread().name, std))
+
+
+def c_thread(name):
+
+    l_thread.name = name        # 将参数赋值给全局对象，ThreadLocal 是经过封装的，所以这里各个线程对全局对象l_thread 的 name属性赋值才不会相互影响（实则是对各自线程的name）
+
+    local_std()                 # 也就是每个线程定义了各自的name，也就是 l_thread['t1.name'] = name， l_thread['t2.name'] = name
+
+
+t1 = threading.Thread(target=c_thread, args=('Ada',), name='T-001')
+t2 = threading.Thread(target=c_thread, args=('Bob',), name='T-002')
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+
+
+
+

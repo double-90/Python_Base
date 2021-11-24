@@ -1,0 +1,42 @@
+### 函数在python中独立存在，可直接使用的，
+### 而方法是必须被别人调用才能实现的
+
+
+## 函数：类中的静态方法，以及类自身调用的 func
+
+## 方法：类中的类方法，以及类的实例对象调用的 func
+
+
+from types import FunctionType, MethodType
+
+
+class Person(object):
+
+    def func1(self):
+        return '普通func'
+
+    @staticmethod
+    def func2():        
+        return '静态func'   # 与类和实例无绑定关系，函数
+
+    @classmethod
+    def func3(self):
+        return '类func'     # 类方法
+
+
+print(Person.func1)     # function
+print(Person.func2)     # function
+print(Person.func3)     # method
+
+p = Person()
+
+print(p.func1)     # method
+print(p.func2)     # function
+print(p.func3)     # method
+
+
+
+# func1()，在类里面定义的func，被类调用为函数，被实例调用为方法
+
+print(isinstance(Person.func1, FunctionType))   # True
+print(isinstance(p.func1, MethodType))          # True

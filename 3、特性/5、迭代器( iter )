@@ -1,0 +1,56 @@
+### 迭代器 Iterator    
+
+
+# 可以被next()函数调用并不断返回下一个值的对象称为迭代器
+
+
+
+# 判断一个对象是否为 Iterator
+
+from collections.abc import Iterator
+
+isinstance([]],Iterator)        # False
+
+isinstance({}, Iterator)        # False
+
+isinstance('ABC',Iterator)      # False
+
+isinstance((x if x & 1 == 1 else 0 for x in range(0, 11)), Iterator)
+
+
+
+
+
+# 生成器都是Iterator对象
+
+# 集合数据类型如 list、dict、str 等是 Iterable     并不是 Iterator，
+
+# 可以通过 iter() 函数获得一个Iterator对象
+
+
+isinstance(iter([]), Iterator)        # True
+
+isinstance(iter({}), Iterator)        # True
+
+isinstance(iter('ABC'),Iterator)      # True
+
+
+
+
+
+# Python的for循环本质上就是通过不断调用next()函数实现的
+
+for i in [1,2,3,4,5]
+    pass
+
+
+实际上完全等价于
+
+
+I = Iter([1,2,3,4,5])         # 获得 Iterator对象
+
+while True:
+    try:                      # 获得下一个值:
+        x = next(I)
+    except StopIteration:     # 遇到StopIteration就退出循环
+        break

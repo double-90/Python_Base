@@ -1,0 +1,74 @@
+### for...in循环，依次把list或tuple中的每个元素迭代出来
+
+list1 = ['val1',1,True]
+
+for i in list1:
+    print(i)
+
+
+
+# 计算1-10的整数之和
+
+# 1、原始写法
+
+sum = 0 
+
+for i in [1,2,3,4,5,6,7,8,9,10]:
+    sum = sum + i
+    
+print(sum)
+
+
+# 2、使用range(),从 0 开始
+
+sum = 0
+
+for i in range(11):
+    sum = sum + i
+print(sum)          # 55
+
+
+
+
+
+### while 循环
+
+
+#计算100以内所有奇数之和
+
+sum = 0
+n = 1
+
+while n<101:
+    sum = sum + n
+    n = n + 2
+
+print(sum)
+
+
+
+
+
+## break 提前退出循环
+
+n = 1
+
+while n<100:    
+    n = n + n
+    if n == 64:          # 当 n=64 时，提前结束循环，一个等号是赋值的意思，不能用于判断
+        break
+print(n)
+
+
+
+## continue 提前结束本轮循环，并开始下一轮的循环
+
+# 打印出10以内的奇数
+
+n = 0
+
+while n<10:
+    n = n + 1
+    if n & 1 != 1:
+        continue
+    print(n)

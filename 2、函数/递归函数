@@ -1,0 +1,43 @@
+### 递归
+
+# 使用递归函数计算阶乘，n! = 1 x 2 x 3 x ... x n，用函数fact(n)表示
+
+fact(n)=n!=1×2×3×⋅⋅⋅×(n−1)×n=(n−1)!×n=fact(n−1)×n
+
+def fact(n):
+    if n == 1:
+        return 1
+    return n * fact(n - 1)
+
+
+# 理论上，所有的递归函数都可以写成循环的方式，但循环的逻辑不如递归清晰
+
+# 函数调用是通过栈（stack）这种数据结构实现的，
+# 每当进入一个函数调用，栈就会加一层栈帧，
+# 每当函数返回，栈就会减一层栈帧。由于栈的大小不是无限的，
+# 所以，递归调用的次数过多，会导致栈溢出
+
+
+
+## 尾递归:尾递归调用时，如果做了优化，栈不会增长，也就不会导致栈溢出
+
+def fact(n):
+    return fact_iter(n, 1)
+
+
+def fact_iter(num, count):
+    if num == 1:
+        return count
+    return fact_iter(num-1, num * count)     # num-1, num * count 在函数调用前就会被计算，不影响函数调用
+
+
+
+print(fact(5))
+
+# 但是Python解释器并没有针对尾递归做优化，所以仍会出现栈溢出的情况
+
+
+
+
+
+## 资料：https://www.zhihu.com/question/20761771

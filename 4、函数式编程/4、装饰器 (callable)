@@ -1,0 +1,141 @@
+### 装饰器:代码运行期间动态增加功能的方式，称之为“装饰器”（Decorator)
+
+### 本质上，decorator就是一个返回函数的高阶函数
+
+
+
+
+##### 这里的例子只是统一使用了 log 变量名，变量名非固定
+
+# 例1
+
+def log(fc):            
+    def wrapper(*args, **kw):
+        print("调用函数：{0}".format(fc.__name__))
+        return fc(*args, **kw)                  # 这里会执行函数 fc，并获得 fc 的返回值作为 wrapper函数的返回值返回
+    return wrapper
+
+
+@log                    # now = log(now)  ==> wrapper，这里变量 now 指向了 函数wrapper
+def now():
+    print('2021-06-04')
+
+
+
+now()                   # now() = log(now)() --> wrapper(*args, **kw)
+print(now.__name__)     # wrapper
+
+
+
+
+
+
+# 例1-1: @function.wraps()  把原始函数的__name__等属性复制到wrapper()函数中
+
+
+import functools
+
+
+def log(fc):    
+    @functions.wraps(fc)                              # 实现：wrapper.__name__ = fc.__name__
+    def wrapper(*args, **kw):
+        print("调用函数：{0}".format(fc.__name__))
+        return fc(*args, **kw)          
+    return wrapper
+
+
+@log                        
+def now():                  
+    print('2021-06-04')
+
+
+now()                   # 等价于 wrapper()
+print(now.__name__)     # 即 wrapper.__name__ ，输出 now 
+
+
+
+
+# 例2：三层嵌套装饰器 decorator
+
+def log(text):                                              
+    def fc(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kw):
+            print("{0},{1}".format(text, fn.__name__))
+            return fn(*args, **kw)                      
+        return wrapper
+    return fc
+
+
+@log('成功执行')
+def func():             # func = log('成功执行')(func)  
+    print('函数')
+
+
+func()
+print()
+
+
+
+
+
+
+# 例2-1：三层嵌套装饰器 decorator，支持 log 、 log() 、log('成功执行')
+
+
+def log(text='函数log，顺利执行'):        # 这里使用了默认参数，当不传入参数时，使用参数定义的默认值，这一步是为了支持 @log() 和 @log('成功执行')
+
+    def fc(fn):
+
+        @functools.wraps(fn)
+        def wrapper(*args, **kw):
+            if callable(text):                          # 判断 text 是否可被调用
+                print('@log，完美执行,%s' % (fn.__name__))
+            else:
+                print('%s,%s' % (text, fn.__name__))
+            return fn(*args, **kw)
+
+        return wrapper
+
+    if callable(text):                 # 判断text 本身是否可以调用，这一步是为了支持 @log
+        return fc(text)
+    return fc
+
+
+
+# 1
+
+'''       
+@log                # now = log(now)
+def now():
+    print('2021-06-04')             # 只有打印，没有返回值
+
+
+f = now()           # 执行 wrapper 函数，并将变量 f 指向函数返回值
+print(f)            # None，该函数没有返回值
+'''
+
+
+
+# 2
+
+'''
+@log()              # now = log()(now)
+def now():
+    print('2021-06-04')
+    return 10086
+
+
+f = now()       
+print(f)            # 10086
+'''
+
+
+
+# 3
+
+@log('log(\'\')成功执行')           # now = log('')(now)
+def now():
+    print('2021-06-04')
+
+now()               # wrapper()

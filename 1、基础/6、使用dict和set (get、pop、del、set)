@@ -1,0 +1,104 @@
+### dict 字典
+
+# 全称dictionary，在其他语言中也称为map，使用键-值（key-value）存储，具有极快的查找速度
+
+# dict的key必须是不可变对象，如字符串、整数！
+
+
+
+
+dict1 = {'key1': 'val1', 'key2': 'val2', 'key3': 'val3'}
+
+
+
+## 判断 key 是否存在
+
+
+
+# 1、in 
+
+"key5" in dict1     # False
+
+
+
+# 2、get()
+
+dict1.get('key5')     # 如果 key 不存在，输出 none
+dict1.get('key5', 0)   # 如果 key 不存在，输出0
+
+
+
+
+## 添加新的元素
+
+dict1["key4"] = val4
+
+
+
+## 删除元素，pop(key)
+
+dict1.pop("key4")
+
+
+
+## 遍历字典列表
+
+for keys, values in dict1.items():
+    print('%s:%s' % (keys, values))
+
+
+for v in dict1.values():    # 遍历字典中所有value
+    print(v)
+
+
+for v in dict1:             # 遍历字典中所有key
+    print(v)
+
+
+
+
+
+### set 集合
+
+# 0、同一集合中，只能存储不可变的数据类型，包括整形、浮点型、字符串、元组
+# 1、set 集合是无序的，所以每次输出时元素的排序顺序可能都不相同
+# 2、集合对于每种数据元素，只会保留一份
+# 3、直接使用一对 {}，Python 解释器会将其视为一个空字典,创建空集合使用 set()
+
+
+
+
+# 创建方式
+
+
+# 1、使用 {} 创建集合
+
+set1 = {"key2", "key1", "key3"}
+
+
+# 2、使用 set() 函数创建
+
+set2 = set(["key2", "key1", "key3"])
+
+
+
+
+## 添加元素 add(key) 
+set2.add("key4")
+
+## 删除元素 remove(key) 
+set2.remove("key4")
+
+## 删除set集合
+del set2
+
+
+
+
+## 做交集、并集、差集运算
+set1 & set2    # 取两集合都有的元素
+set1 | set2    # 取两集合所有元素
+set1 - set2    # 取一个集合中另一集合没有的元素
+set1 ^ set2    # 取集合 A 和 B 中不属于 A&B 的元素
+
+

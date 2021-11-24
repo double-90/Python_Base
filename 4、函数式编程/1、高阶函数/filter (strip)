@@ -1,0 +1,16 @@
+### filter()
+
+## filter() 函数接收两个参数，一个是函数，一个是Iterable(可迭代对象)
+
+## fiter() 将函数依次作用于每个元素，根据返回值是True还是False决定保留还是丢弃该元素
+
+
+
+
+# 例子，筛选出奇数
+
+def is_odd(n):
+    return n & 1 == 1
+
+
+print(list(filter(is_odd, [1, 2, 4, 5, 6, 9, 10, 15])))      # [1, 5, 9, 15]

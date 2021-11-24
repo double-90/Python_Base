@@ -1,0 +1,157 @@
+### map()
+
+##  map() 函数接收两个参数，一个是函数，一个是Iterable(可迭代对象)
+
+##  map() 会将函数依次作用到对象的每个元素上，并将结果作为新的Iterator返回
+
+
+
+
+# 例子
+
+def f(x):
+    return x * x
+
+
+m = map(f, [x for x in range(0, 6)])
+
+
+
+# Iterator是惰性序列，因此通过 list() 函数让它把整个序列都计算出来并返回一个list
+
+print(list(m))             # [0, 1, 4, 9, 16, 25]
+
+
+
+
+
+# 例子2，将 str 换为 int 类型
+
+
+def char2num(s):
+    nums = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+    return nums[s]
+
+
+print(list(map(char2num, '12580')))     # [1,2,5,8,0]
+
+
+
+
+
+
+
+### reduce()
+
+##  reduce() 把一个函数作用在一个序列上，这个函数必须接收两个参数
+
+##  reduce() 与 map 不同的是：reduce把结果继续和可迭代对象的下一个元素进行运算
+
+
+
+
+# 例子
+
+from functools import reduce
+
+
+def add(x, y):
+    return x + y
+
+
+r = reduce(f, [1,2,3,4,5])         
+
+# 等价于 f(f(f(f(1, 2), 3), 4), 5)
+#            f(f(f(3, 3), 4), 5)
+#                  ... ... 
+#                  f(10,5)
+
+
+print(r)    # 15，即 1+2+3+4+5
+
+
+
+
+
+# 例子2，结合map的例子2，将 str 转为 int，再将其转为一个整数 12580
+
+
+from functools import reduce
+
+def str2int(s):
+
+    def f(x, y):
+        return x * 10 + y
+
+    def char2num(s):
+        nums = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+        return nums[s]
+    
+    return reduce(f, map(char2num, s))
+
+
+
+i = str2int('12580')
+
+print(i)          # 12580
+print(type(i))    # int
+
+
+
+
+
+
+
+# 例子3
+
+
+from functools import reduce
+
+
+def str2float(n):
+    
+    def str2num(n):
+        DIGITS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+        return DIGITS[n]
+
+    def num2int(x, y):
+        return x * 10 + y
+
+    s = n.split('.', 1)
+    
+    s1 = reduce(num2int, map(str2num, s[0]))
+
+    s2 = reduce(num2int, map(str2num, s[1])) * (0.1 ** len(s[1]))
+
+    return s1 + s2
+
+print('str2float(\'123.456\') =', str2float('123.456'))
+if abs(str2float('123.456') - 123.456) < 0.00001:
+    print('测试成功!')
+else:
+    print('测试失败!')
+
+
+
+
+# 例4
+
+def l(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kw):
+        print(func.__name__)
+        return func(*args, **kw)
+    return wrapper
+
+@l
+def timeout(s):
+    print(time.asctime(time.localtime(time.time())))
+    time.sleep(s)
+    print(time.asctime(time.localtime(time.time())))
+
+
+
+print(timeout.__name__)
+
+
+

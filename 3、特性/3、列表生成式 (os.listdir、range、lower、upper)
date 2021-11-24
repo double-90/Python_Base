@@ -1,0 +1,66 @@
+### 列表生成式  List Comprehensions
+
+
+# 普通写法
+
+list(range(1,11))     # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+
+
+
+## 列表生成式           格式：[ 指定元素格式 for循环 if语句 ] # if语句作为筛选条件，不能带else
+
+
+L = [x for x in range(1, 11)]                # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+L = [x + m for x in "ABC" for m in "DEF"]            # ['AD', 'AE', 'AF', 'BD', 'BE', 'BF', 'CD', 'CE', 'CF']
+
+
+
+
+# 利用 dict的 key-value键值对 生成 List
+
+
+d = {"1": "c", "2": "b", "3": "c"}
+
+L = [k + ":" + v for k, v in d.items()]
+
+
+
+
+# 在一个列表生成式中
+
+
+# 1、for 前面的if ... else是表达式
+
+L = [x if x & 1 == 1 else 0 for x in range(1, 11)]     # [1, 0, 9, 0, 25, 0, 49, 0, 81, 0]
+
+
+
+# 2、for 后面的if是过滤条件，不能带else
+
+L = [x * x for x in range(1, 11) if x & 1 == 1]        # [1, 9, 25, 49, 81]
+
+
+
+
+# 字母大小写
+
+L = [x.lower() for x in ["Hello","World]]       # ['hello', 'world']
+L = [x.upper() for x in ["Hello","World]]       # ['HELLO', 'WORLD']
+
+
+
+# 列出当前目录下的所有文件和目录名
+
+
+import os       # 导入os模块
+
+[x for x in os.listdir('.')]     # os.listdir可以列出文件和目录
+
+
+
+
+## 字典和集合同理
+
+## 相关资料：https://www.cnblogs.com/songdanlee/p/11104725.html

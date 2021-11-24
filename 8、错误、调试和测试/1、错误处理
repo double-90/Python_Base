@@ -1,0 +1,93 @@
+### try
+
+
+
+## 错误处理机制格式
+
+try  
+    # 执行代码
+
+except #错误类型 as #变量名：            # 捕获错误，当捕获到时，执行以下语句
+
+    # 输出内容
+
+except #错误类型 as #变量名：            # 可以有多个except捕获不同的错误
+
+
+finally：                               # finally 如果存在，则一定会被执行（finally语句可省略）
+    
+    # 输出内容
+
+
+
+
+
+
+## 记录错误：logging模块
+
+
+
+import logging
+
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    try:
+        bar('0')
+    except Exception as e:
+        logging.exception(e)        # 程序打印完错误信息后会继续执行，并正常退出
+
+main()
+print('END')                        
+
+
+
+
+
+
+###  抛出错误
+
+
+def mul(*args):
+    if len(args) == 0:          
+        raise TypeError        # 抛出 TypeError
+    else:
+        n = 1
+        for i in args:
+            n = n * i
+        return n
+
+
+
+if mul(5) != 5:
+    print('测试失败!')
+elif mul(5, 6) != 30:
+    print('测试失败!')
+elif mul(5, 6, 7) != 210:
+    print('测试失败!')
+elif mul(5, 6, 7, 9) != 1890:
+    print('测试失败!')
+else:
+    try:
+        mul()
+        print('测试失败!')
+    except TypeError:           # 捕获 TypeError
+        print('测试成功!')
+        raise                   # 抛出错误，raise 后面如果没写具体抛出什么错误，会抛出 捕获的错误信息
+
+
+
+
+
+
+## 所有的错误类型都继承自BaseException类
+
+## https://docs.python.org/3/library/exceptions.html#exception-hierarchy
+
+
+
+## 若多个except，注意错误类型的继承关系，若前一个是后一个的父类，即前一个错误类型已包含后一个类型，则后一个永远都捕获不到相应错误！因为被前一个提前捕获到了

@@ -1,0 +1,147 @@
+## 读写文件就是请求操作系统打开一个文件对象（通常称为文件描述符），
+
+## 然后，通过操作系统提供的接口从这个文件对象中读取数据（读文件），
+## 或者把数据写入这个文件对象（写文件）
+
+ 
+f = open(r'资料\9、IO编程\test.txt', 'r')         # 参数1：文件路径；参数2：选择模式;    另外注意一下，在python字符串中 \ 有转义的含义，需要取消其特殊功能
+
+t = f.read()
+print(t)
+
+f.close()
+
+
+
+
+
+
+## 由于文件读写时都有可能产生IOError，一旦出错，后面的f.close()就不会调用
+
+## 所以为了避免出现错误时，无法正确关闭文件，所以选择使用 try 语句
+
+try:
+    
+    f = open(r'资料\9、IO编程\test.txt', 'r')
+    print(f.read())
+
+finaly:
+
+    f.close()
+
+
+
+
+
+## 而 try 语句比较繁琐，所以 python引入了 with 语句
+
+with open(r'资料\9、IO编程\test.txt', 'r') as f:
+
+    print(f.read())     # 一次性读取文件的全部内容，如果文件太大，内存就爆了
+
+    print(f.read(size))       # 每次最多读取size个字节的内容\
+
+    print(f.readline())       # 每次读取一行内容
+
+    line = f.readlines()     # 一次读取所有内容并按行返回list
+
+    for i in line:
+        print(i)
+
+
+
+
+
+## open 函数相关参数
+
+
+
+# 如要读取二进制文件，比如图片、视频等等，用'rb'模式打开文件
+
+open(#路径,'rb')
+
+f.read()
+
+
+
+# 读取非UTF-8编码的文本文件，需要给open()函数传入encoding参数
+
+open(#路径, 'r' ,encoding = "utf-8")
+
+f.read()
+
+
+
+# 遇到编码错误后如何处理，需要open()函数接收一个errors参数
+
+open(#路径, 'r', encoding = "utf-8", errors='ignore')
+f.read()
+
+
+
+
+
+
+
+
+
+### 拓展：理解 with
+
+
+
+首先
+
+上下文管理器，即是一个对象，该对象需要实现一对专门方法（__enter__、__exit__）
+
+上下文，一般理解为环境
+
+
+其次
+
+允许用户自定义类来定义运行时上下文（即自定义环境）
+
+    在语句体被执行前进入该上下文（创建环境__enter__）
+
+    语句体运行
+
+    并在语句执行完毕时退出该上下文（退出环境__exit__）
+
+
+
+
+
+
+class FileManager(object):                              # 自定义了一个上下文管理器 FileManager（该名字是自己取的，取啥都行）
+
+    def __init__(self, path, mode):
+        self.path = path
+        self.mode = mode
+        self.file = None
+    
+    def __enter__(self):                                # __enter__ 方法需要返回值
+
+        print('调用 __enter__ 方法')
+
+        self.file = open(self.path, self.mode, encoding = 'utf-8', errors='ignore')               # 由于文档使用的是 gbk 编码，我们需要转换成python能识别的编码 encoding = 'utf-8'
+
+        return self.file                                # 此方法的返回值会绑定到使用此上下文管理器的 with 语句的 as 子句中的标识符
+    
+    def __exit__(self, type, value, traceback):         # 如果没出现异常，则这三个参数均为None，若出现异常，则参数会包含异常的类型、值以及回溯信息
+
+        print('调用 __exit__ 方法')
+        
+        if self.file:
+            self.file.close()
+    
+
+with FileManager(r'资料\9、IO编程\test.txt', 'r') as f:
+    print(f.read())                                     # 语句体，即语句体被执行前进入该上下文（__enter__)，并在语句执行完毕时退出该上下文(__exit__)
+        
+
+
+
+### 写文件
+
+f = open('/Users/michael/test.txt', 'w')
+f.write('Hello, world!')
+f.close()

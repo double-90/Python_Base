@@ -1,0 +1,62 @@
+### 特殊变量：以双下划线结尾，外部可以直接访问的
+
+
+
+__slots__     # 限制该class实例能添加的属性
+
+
+class Person(object):
+
+    count = 0       # 类属性不受限制
+    
+    __slots__ = ('name', 'age')         # 限制类的实例属性
+
+    def __init__(self, name, age):      # 只能设置__slots__里的属性
+        self.name = name
+        self.age = age
+
+
+
+p = Person('小吴',20)
+
+p.gender = '男'         # AttributeError, __slots__ 没有 gender, 受限制
+
+
+
+### __slots__定义的属性仅对当前类实例起作用，对继承的子类是不起作用的
+
+### 除非子类中也定义了__slots__，则是自身的__slots__加上父类的__slots__
+
+
+
+
+__str__ 、 __repr__
+
+## 两者的区别是__str__()返回用户看到的字符串，
+            而__repr__()返回程序开发者看到的字符串
+
+
+
+class Student(object):
+
+    def __init__(self, name):
+        self._name = name
+
+    def __str__(self):      # 自定义返回实例对象的信息
+        return '__str__: Student object(name: %s)' % (self._name)
+
+    def __repr__(self):
+        return '__repr__: Student object(name: %s)' % (self._name)
+
+
+    # 通常__str__()和__repr__()代码都是一样的,所以我们可以用下面的语句
+
+    # __repr__ = __str__
+
+
+
+print(Student('小圆'))  # __str__: Student object(name: 小圆)
+
+s = Student('小王')     
+
+print(s)                # __str__: Student object(name: 小王)

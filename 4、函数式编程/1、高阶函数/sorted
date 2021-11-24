@@ -1,0 +1,21 @@
+### sorted()
+
+### sorted()对list进行排序
+
+
+
+### 格式：sorted(list, key = func, reverse=True) 
+
+## key函数将作用于list的每一个元素上，并根据key函数返回的结果进行排序
+
+## reverse=True ：进行反向排序
+
+
+
+# 例子：
+
+L = ['bob', 'about', 'Zoo', 'Credit']           
+
+s = sorted(L, key=str.lower, reverse=True)      # 将字符串映射为小写（不会对实际字符串进行改动），然后反向排序，
+
+print(s)        # ['Zoo', 'Credit', 'bob', 'about']

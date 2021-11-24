@@ -1,0 +1,129 @@
+## 进程是由若干线程组成的，一个进程至少有一个线程
+
+
+
+
+
+### 启动一个线程就是把一个函数传入并创建Thread实例，然后调用start()开始执行
+
+
+
+
+
+
+
+import threading, time
+
+
+def loop():
+
+    print("当前线程（%s）已启动"%(threading.current_thread().name))     # current_thread() 函数，返回当前线程的实例
+
+    n = 0
+    while n < 5:
+        n = n + 1
+        print("thread %s >>> %s" % (threading.current_thread().name, n))
+        time.sleep(1)
+
+    print("线程（%s）执行完毕" % (threading.current_thread().name))
+
+
+print("当前主线程（%s）已启动！！！" % (threading.current_thread().name))
+
+t = threading.Thread(target=loop, name="thread_01")         # 名字仅仅在打印时用来显示，完全没有其他意
+t.start()
+t.join()
+
+print("主线程（%s）已执行完毕！！！" % (threading.current_thread().name))
+
+
+
+
+
+
+
+### 多线程中，所有变量都由所有线程共享，所以，任何一个变量都可以被任何一个线程修改
+
+
+import threading, time
+
+
+money = 0
+
+
+def change_it(n):
+    global money
+    money = money + n
+    money = money - n
+
+
+def run_thread(n):
+
+    for i in range(2000000):    # 线程的调度是由操作系统决定的，当t1、t2交替执行时，只要循环次数足够多，balance的结果就不一定是0了
+        change_it(n)
+
+
+t1 = threading.Thread(target=run_thread, args=(5,))
+t2 = threading.Thread(target=run_thread, args=(9,))
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+print(money)        # 输出值并不固定
+
+
+
+
+
+### 多线程加锁 threading.Lock
+
+
+## 好处：确保了某段关键代码只能由一个线程从头到尾完整地执行
+## 坏处：阻止了多线程并发执行，包含锁的某段代码实际上只能以单线程模式执行，效率就大大地下降
+
+
+
+import threading, time
+
+
+money = 0
+lock = threading.Lock()
+
+
+def change_it(n):
+    global money
+    money = money + n
+    money = money - n
+
+
+def run_thread(n):
+
+    for i in range(2000000):
+        lock.acquire()          # 获取锁, 当某个线程开始执行change_it()时，我们说，该线程因为获得了锁，因此其他线程不能同时执行change_it()，只能等待，直到锁被释放
+        try:
+            change_it(n)
+        finally:
+            lock.release()      # 释放锁
+
+
+t1 = threading.Thread(target=run_thread, args=(5,))     
+t2 = threading.Thread(target=run_thread, args=(9,))
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+print(money)                    # 0
+
+
+
+
+
+
+## GIL锁：Global Interpreter Lock，任何Python线程执行前，必须先获得GIL锁，然后，每执行100条字节码，解释器就自动释放GIL锁，让别的线程有机会执行
+
+
+

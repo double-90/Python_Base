@@ -1,0 +1,124 @@
+### 可变对象：list dict set
+### 不可变对象：tuple string int float bool
+
+
+
+
+## 可变对象与不可变对象的区别：在于对象本身是否可变。
+
+
+
+# 不可变对象:
+
+
+
+a = 1       # a -> 1        
+
+print(id(a))    # 内存地址 9203840
+
+
+
+b = a       # b -> 1        
+
+a = 2       # a -> 2        
+
+c = 1       # c -> 1
+
+
+
+print(a)    # 2
+print(id(a))    # 内存地址 9203856
+
+print(b)    # 1   
+print(id(b))    # 内存地址 9203840
+
+print(c)    # 1  
+print(id(c))    # 内存地址 9203840
+
+
+由此看出，不可变对象内存地址上的值不能改变，只能是再新建一个新对象的内存地址，变量再指向新的地址
+
+
+
+
+
+# 可变对象
+
+
+
+L = [0, 1]          # 变量L -> list
+                    # list  -> 0, 1
+                    
+L1 = L              
+
+
+L.append(2)         # 添加L的元素
+
+print(L)            # [0,1,2]
+print(L1)           # [0,1,2]
+print(id(L))        # 76630216
+print(id(L1))       # 76630216
+
+
+L1[0] = 1           # 修改L的元素
+
+print(L)            # [1,1,2]
+print(L1)           # [1,1,2]
+print(id(L))        # 76630216
+print(id(L1))       # 76630216
+
+
+由此看出，可变对象内存地址上的值可以修改，并不需要指向其它地址！
+
+
+L = [0, 1]           # L 指向了新对象
+
+print(L)            # [0,1]
+print(L1)           # [1,1,2]
+print(id(L))        # 986504
+print(id(L1))       # 76630216
+
+
+
+
+
+
+
+# 作为函数参数：python中向函数传递参数只能是引用传递，表示把对象的内存地址传了进去
+
+
+def func3(x):       # 这里是将 a 指向的对象内存地址传递过去
+    x += 1          # 由于是不可变对象，所以无法修改内存地址上的值，即 1
+    print(x)
+
+
+a = 1       
+func3(a)    # 2     # 这里只能是指向另外一个内存地址 
+print(a)    # 1     # 全局变量 a 仍旧指向 1 的内存地址
+
+
+
+def func3_1(x):
+    x.append(2)     
+    print(x)        
+
+
+L = [0, 1]  
+func3_1(L)  # [0, 1, 2] 
+print(L)    # [0, 1, 2]     
+
+
+    
+
+
+
+资料1：https://www.bilibili.com/video/BV1Pt411j7wU?from=search&seid=4244570393047426900
+
+资料2：https://zhuanlan.zhihu.com/p/34395671
+
+资料3：https://www.liaoxuefeng.com/wiki/1016959663602400/1017092876846880
+
+
+
+        
+                

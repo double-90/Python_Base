@@ -1,0 +1,64 @@
+### 迭代 Iteration
+
+
+
+
+可以直接作用于for循环的数据类型有以下几种：
+
+    一类是集合数据类型，如list、tuple、dict、set、str等；
+
+    一类是generator，包括生成器和带yield的generator function。
+
+这些可以直接作用于for循环的对象统称为可迭代对象：Iterable。
+
+
+
+
+## 判断一个对象是否为可迭代对象   
+
+from collections.abc import Iterable     # 引用 collections.abc模块 的Iterable类型
+
+
+print(isinstance(11, Iterable))   # False
+
+print(isinstance('11', Iterable))   # True
+
+
+
+
+
+## dict 迭代
+
+d = {'a': 1, 'b': 2, 'c': 3}
+
+
+# 1、key 
+
+for i in d:
+    print(i)
+
+
+# 2、value 
+
+for v in d.values():
+    print(v)
+
+
+# 3、key:values       items() 方法把字典中每对 key 和 value 组成一个元组，然后输出
+
+for i, v in d.items():
+    print(i, ':', v)
+
+
+
+
+
+## enumerate 函数，可以把一个list变成索引-元素对
+
+L = ['a', 'b', 'c']
+
+for i, v in enumerate(L):
+    print(i, v)
+
+
+

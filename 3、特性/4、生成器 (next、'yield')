@@ -1,0 +1,130 @@
+### 生成器 generator 
+
+## 可以在循环的过程中不断推算出后续的元素，这样就不必创建完整的list，从而节省大量的空间
+
+## 一边循环一边计算的机制
+
+
+
+## 创建方式:
+
+
+
+# 1、把一个列表生成式的[]改成()，就创建了一个generator
+
+
+L = [x * x for x in range(1,11) if x & 1 == 1]    # 列表生成器
+
+g = (x* x for x in range(1,11) if x & 1 == 1)     # generator
+
+
+
+
+# 2、函数定义中包含yield关键字（即 return 替换成 yield），那么这个函数就不再是一个普通函数，而是一个generator，
+
+# generator函数的“调用”实际返回一个generator对象，如 fid(6)   # <generator object fid at 0x03D243E0>
+
+
+def fid(max):
+    n, a, b = 0, 0, 1
+    while n < max:
+        yield b             # 每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行
+        a, b = b, a + b
+        n = n + 1
+    return 'done'
+
+
+print(next(fid(5)))   # 1       每次执行 fid(5)，都会执行 n, a, b = 0, 0, 1 ，所以导致每次返回都是一样的值
+print(next(fid(5)))   # 1
+print(next(fid(5)))   # 1
+
+
+o = fid(5)            # 函数在这执行了一遍，o 指向了函数返回的一个生成器对象
+
+print(o)
+print(next(o))        # 1
+print(next(o))        # 1
+print(next(o))        # 2
+
+
+
+
+
+
+
+
+# 单次调用
+# generator保存的是算法，每次调用next(g)，就计算出g的下一个元素的值，直到计算到最后一个元素，没有更多的元素时，抛出StopIteration的错误
+
+
+
+
+
+
+# 多次使用 for循环来迭代
+
+for i in g:
+    print(i)
+
+
+
+
+
+
+
+实例：
+
+
+g = (lambda n=x: x ** 2 for x in range(1, 11, 1) if x & 1 != 1)
+
+
+# 单次调用
+
+print(next(g)())
+
+
+# for 循环
+
+for i in g:
+    print(i())
+
+
+
+
+
+
+def fib(max):
+    n, a, b = 0, 0, 1
+    while n < max:
+        yield b
+        a, b = b, a+b
+        n = n + 1
+    return "函数执行完毕"
+
+
+f = fib(6)
+
+# 单次调用
+
+print(next(f))
+
+
+
+# for 循环
+
+for i in f:
+    print(i)
+
+
+
+
+# while 循环
+
+f = fib(6)
+
+while True:
+    try:
+        print(next(f))
+    except StopIteration as e:
+        print(e.value)
+        break

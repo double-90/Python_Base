@@ -1,0 +1,215 @@
+# -*- coding:utf-8 -*-
+
+
+## 程序运行过程中，变量都是保存在内存之中，一旦程序结束，变量所占用的内存就被操作系统全部回收
+
+## 如果没有把修改后的变量存储到磁盘上，那下次访问又会获得修改前的变量
+
+
+### 我们把变量从内存中变成可存储或传输的过程称之为序列化，即 pickling
+
+## 序列化之后，就可以把序列化后的内容写入磁盘，Python提供了pickle模块来实现序列化
+
+## 反过来把变量内容从序列化的对象重新读到内存里称之为反序列化，即unpickling
+
+
+
+
+## 对对象
+
+import pickle
+
+
+
+# dumps(obj) 将对象序列化成一个bytes
+
+
+d = {'name': "xiaohua", 'age': 18, 'gender': '女'}
+
+print(pickle.dumps(d))      # 把任意对象序列化成一个bytes
+
+
+
+
+
+# pickle.loads(x)
+
+
+x =b'\x80\x04\x95-\x00\x00\x00\x00\x00\x00\x00}\x94(\x8c\x04name\x94\x8c\x07xiaohua\x94\x8c\x03age\x94K\x12\x8c\x06gender\x94\x8c\x03\xe5\xa5\xb3\x94u.'
+
+d3 = pickle.loads(x)
+
+print(d3)       
+
+
+
+
+## 对文件
+
+
+# dump(obj,file) 将对象序列化并写入文件
+
+
+d1 = {'name': "xiaohua", 'age': 21, 'gender': '男'}
+
+f = open('test.txt', 'wb')
+
+pickle.dump(d1, f)
+
+f.close()           
+
+
+
+
+# pickle.load(file) 从磁盘中读取出数据，将数据反序列化出对象
+
+
+f = open('test.txt', 'rb')      # b 指二进制，即 bytes
+
+d2 = pickle.load(f)
+
+f.close()  
+
+print(d2)
+
+
+
+
+
+
+
+
+### JSON 序列化  （方法与 pickle 一致，只是序列化后的格式不同 pickle:bytes  JSON:json)
+
+
+
+## 对文件
+
+d = {"name": "leke", "age": 23, "gender": "男"}
+
+f = open('test.txt', 'w')
+
+json.dump(d, f)
+
+f.close()
+
+
+
+f1 = open('test.txt', 'r')
+
+d1 = json.load(f1)
+
+f1.close()
+
+print(d1)
+
+
+
+###################### 以上例子完全等价于下面  #########################
+
+
+
+d = {"name": "leke", "age": 23, "gender": "男"}
+
+
+with open('test.txt', 'w') as f:
+    json.dump(d, f)
+
+
+with open('test.txt', 'r') as f:
+    d1 = json.load(f)
+    print(d1)
+
+
+
+
+
+
+## load 和 loads
+
+
+# 注意：指针的变化
+
+with open('test.txt', 'r') as f:
+
+
+    print(type(f))                      # <class '_io.TextIOWrapper'>  也就是文本IO类型
+    print(json.load(f))                 # {'name': 'leke', 'age': 23, 'gender': '男'}
+
+    print(f.tell())                     # 47
+    print(f.read())                     #   ,由于指针已经移动到47，后面没有数据了，所以读了个寂寞
+
+
+
+    print(type(f.read()))               # <class 'str'>  字符串类型
+    f.seek(0)                       
+    print(json.loads(f.read()))         # {'name': 'leke', 'age': 23, 'gender': '男'}
+
+
+
+
+
+
+### JSON 进阶（class序列化）
+
+
+import json
+
+
+class Student(object):
+    def __init__(self, name, age, score):
+        self.name = name 
+        self.age = age
+        self.score = score
+
+
+s = Student('xiaomi', 18, 99)
+
+# json.dumps(s)    TypeError，直接序列化会报错
+
+
+
+
+
+# 类不能直接被序列化，我们需要将类通过函数转换成可序列化的对象才行
+
+
+
+# class -----------> dict 对象 -----------> Json 格式的数据
+#       class2dict              Json序列化
+
+
+
+# 首先，先写一个转换函数
+
+def class2dict(s):
+    return{
+        'name': s.name,
+        'age ': s.age,
+        'score': s.score
+    }
+
+# 接着，将转行函数放到参数中
+
+print(json.dumps(s, default=class2dict))
+
+
+
+
+# 通常class的实例都有一个__dict__属性，它就是一个dict，用来存储实例变量
+
+# 所以我们可以利用这一点
+
+d = json.dumps(s, default =lambda x : x.__dict__)
+
+
+
+
+# 反序列化得到dict对象，传入object_hook 的函数负责把dict转换为Student实例
+
+
+def dict2class(s):
+    return Student(s['name'], s['age'], s['score'])
+
+
+print(json.loads(d, object_hook=dict2class))

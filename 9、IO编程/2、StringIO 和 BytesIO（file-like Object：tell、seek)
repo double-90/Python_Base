@@ -1,0 +1,102 @@
+#-*- coding:utf-8 -*-
+
+
+## StringIO     顾名思义就是在内存中读写str（只能操作str）。
+
+
+from io import StringIO
+
+
+
+# 将字符串写入内存
+
+s = StringIO()  
+
+s.write('Hello')
+
+print(s.getvalue())             
+
+
+
+# 读内存中的字符串
+
+s1 = StringIO('World!')
+
+print(s1.readline())
+
+
+
+
+
+
+
+## BytesIO      实现了在内存中读写bytes
+
+
+from io import BytesIO
+
+
+# 将二进制数据写到内存中
+
+b = BytesIO()
+
+b.write('中文'.encode('utf-8'))     # 需要将 unicode 编码的 str 编码为 utf-8 的二进制数
+
+print(b.getvalue())                 # b'\xe4\xb8\xad\xe6\x96\x87'
+
+
+
+
+# 读取内存中的二进制数据
+
+b1 = BytesIO(b'\xe4\xb8\xad\xe6\x96\x87')
+
+print(b1.readline().decode('utf-8'))
+
+
+
+
+
+
+
+
+# getvalue() 和 read() 的区别：（涉及 tell() 和 seek() 方法）
+
+
+
+from io import StringIO
+
+
+s = StringIO('abcEFG')
+
+
+print(s.tell())         # 0, 指针初始值为0
+
+s.write('ABC')          # 指针产生移动
+
+print(s.tell())         # 3
+
+
+
+print(s.read())         # EFG，指针读取移动之后位置的值，并随着移动
+
+print(s.tell())         # 6
+
+
+
+print(s.read())         # 指针移动到了数据之后，所以读取不到数据
+
+print(s.tell())         # 6
+
+
+
+print(s.getvalue())     # ABCEFG, 不受指针影响
+
+
+
+
+s.seek(0, 0)            # seek 方法：移动指针到指定位置，第一个参数时指针初始偏移值（即从0偏移到哪个位置），第二个参数是指针位置，默认值为0 （0：文件开头；1：当前位置；2：文件末尾）
+
+print(s.tell())         # 0
+
+print(s.read())         # ABCEFG

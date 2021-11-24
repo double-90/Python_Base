@@ -1,0 +1,50 @@
+### 私有变量：变量名如果以'__'双下划线开头，就变成了一个私有变量（private）
+
+
+
+class Animal(object):
+
+    def __init__(self, kind, name):
+        self.__kind = kind         
+        self.name = name
+    
+    def getkind(self):          # 提供外部获取私有变量值的方法
+        return self.__kind      
+
+
+a = Animal('dog', 'w')
+
+print(a.name)     # w
+
+
+
+
+# 私有变量无法被外界访问
+
+print(a.__kind)   # AttributeError: 'Animal' object has no attribute '__kind'
+
+
+
+# 私有变量不能随意设置
+
+a.__kind = 'cat'     # 内部私有属性其实是 _Animal__kind，所以该变量赋值不会影响到
+
+print(a.__kind)      # cat
+
+print(a.getkind())   # dog，依旧为原来的值
+
+
+
+
+### 双下划线开头的实例变量是不是一定不能从外部访问呢？
+
+
+##  其实也不是。
+
+##  不能直接访问__name是因为Python解释器对外把__name变量改成了 _Student__name，
+
+##  所以，仍然可以通过_Student__name来访问__name变量
+
+print(a._Animal__kind)      # dog，依旧可以访问到类私有属性
+print(a.getkind())          # dog
+

@@ -1,0 +1,26 @@
+class Student(object):
+    count = 0
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        Student.count += 1
+
+    def __del__(self):
+        Student.count -= 1
+
+
+s = Student('小吕', 18)         # 生成实例对象
+
+
+print(dir(s))                   # 获得一个对象的所有属性和方法
+
+
+print(hasattr(s, 'age'))        # 判断对象是否有 age 属性
+
+print(getattr(s, 'age'))        # 获取 age 属性值
+
+
+print(setattr(s, 'age', 20))    # 设置 age 属性值
+
+print(s.age)                    # 获取 age 属性值

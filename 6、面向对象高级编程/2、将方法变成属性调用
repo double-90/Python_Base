@@ -1,0 +1,26 @@
+### 封装方法，使得方法如同实例属性一样去赋值、获取
+
+
+
+
+# -*- coding:utf-8 -*-
+
+class Student(object):
+
+    @property               # 读
+    def name(self):
+        return self._name           # 实例的属性名不能和方法重名，那样会导致死循环（即调用完方法，访问属性，而后又调用方法...）
+
+    @name.setter            # 写
+    def name(self, val):
+        if isinstance(val, str):    # 参数检查，判断输入内容是否符合标准
+            self._name = val
+        else:
+            raise TypeError("输入类型有误")
+    
+
+s = Student()
+
+s.name = '小红'             # 这里调用了 name 方法，如同属性一样赋值
+
+print(s.name)               

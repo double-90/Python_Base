@@ -1,0 +1,31 @@
+
+from enum import Enum, unique
+
+
+month = Enum('Mon', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
+print(month.Jan)            # Mon.Jan，正常的类属性是返回该属性的值，而这里则是经过处理，返回了属性自身
+print(month(1))             # Mon.Jan
+
+print(month.Feb.value)      # 2         value属性则是自动赋给成员的int常量，默认从1开始计数
+
+
+print(type(month))          # <class 'enum.EnumMeta'>   枚举类
+
+
+
+
+
+
+### 如果需要更精确地控制枚举类型，可以从Enum派生出自定义类
+
+
+@unique # 防止出现重复值
+class Mons(Enum):
+    Jan = 0
+    Feb = 2
+    Mar = 4
+#   Apr = 4                 报错： ValueError，duplicate values
+
+print(Mons.Jan)             # Mons.Jan
+print(Mons(4))

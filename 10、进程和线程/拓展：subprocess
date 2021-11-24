@@ -1,0 +1,322 @@
+### subprocess 模块允许你生成新的进程，连接它们的输入、输出、错误管道，并且获取它们的返回码
+
+### 通俗地说就是通过这个模块，你可以在Python的代码里执行操作系统级别的命令，比如“ipconfig”、“du -sh”等等
+
+
+
+
+
+
+
+### subprocess.Popen ：返回值是一个Popen对象
+
+
+
+import subprocess
+
+
+
+######################################### Popen 常用参数：#######################################
+
+## 参数：
+
+## args: 一个程序参数的序列或者一个简单字符串（通常是个列表或字符串）（要执行的 shell 命令，或者命令列表）
+
+##       可以接收一个类似'du -sh'的字符串，也可以传递一个类似['du', '-sh']的字符串分割列表
+
+
+p = subprocess.Popen('ipconfig')
+
+
+
+
+## 参数：
+
+## stdin、stdout、stderr
+
+    # PIPE:表示新建一个子进程管道
+
+    # DEVNULL:表示使用特殊文件（空设备文件，它会丢弃一切写入其中的数据）
+
+    # STDOUT：来自于子进程的标准错误数据被 stdout 相同的句柄捕获（表示stdout和stderr合并输出）
+
+    # 一个现存的文件对象（比如 stdout = 文件路径，表示将输出流到该文件中）
+
+    # None：默认值，表示子进程的文件流将继承自父进程
+
+
+p = subprocess.Popen(['ipconfig'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+
+
+
+
+## 参数：
+
+## shell：为True 时，将通过操作系统的shell执行指定的命令
+
+# 通过 shell=True 设置，则确保所有空白字符和元字符被恰当地包裹在引号内以避免 shell 注入 漏洞就由应用程序负责了
+
+
+
+# 我的理解是：当命令涉及某个文件、目录或路径对象时，无论是显式还是隐式，shell 都需要为True，否则会报错 FileNotFoundErro
+
+
+# 实例：
+
+subprocess.Popen('dir')             # 隐式指定目录（当前路径），报错
+
+subprocess.Popen('dir', shell=True)
+
+subprocess.Popen('dir D:')          # 显式指定目录，报错
+
+subprocess.Popen('dir D:', shell=True)
+
+
+
+
+
+
+## 参数：
+
+## cwd： 设置当前的命令执行的目录路径
+
+subprocess.Popen('md file',  shell=True, cwd='D:')         # 在d盘创建一个file文件夹
+
+
+
+
+
+
+## 参数：
+
+## encoding
+
+
+p = subprocess.Popen('python.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+
+
+# 说明：
+
+# encoding 没有设置时，管道默认是以字节流的模式打开（即里面的数据都为字节），所以无论我们是输入还是输出，都要进行相应的转换
+
+
+# 实例：
+
+p.stdin.write("print('中文')\n".encode())   # 需要将字符串转换为字节串，才能输出到输入管道中
+
+p.stdin.close()                             # 关闭输入管道
+
+print(p.stdout.read().decode('utf-8'))
+
+
+
+
+# 说明：
+
+# encoding 设置为 utf-8，可以理解在输入输出前，都会自动转换成相应的格式
+
+
+# 演示：
+
+# 输入: str --- encode:utf-8 --->bytes，
+# 输出：bytes --- decode:utf-8 ---> str
+
+
+# 实例：
+
+p = subprocess.Popen('python.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding = 'utf-8')
+
+p.stdin.write('print("中文")\n')
+
+p.stdin.close()
+
+print(p.stdout.read())
+
+
+
+
+
+
+# 说明：
+
+# text 设置为 True， 管道是以文本流的格式打开（即里面的数据都为文本，即字符串，所以输入输出不需要转换，但是+++++不包括中文++++++）
+
+
+
+# 实例：
+
+p = subprocess.Popen('python.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+p.stdin.write('print("abc")')
+
+p.stdin.close()                 # 关闭输入管道
+
+print(type(p.stdout.read()))    # 读取输出管道数据
+
+p.kill()                        # 子进程自杀（需要p.stdout.read()执行后，才能结束进程）
+
+
+
+
+
+
+######################################### Popen 常用方法：#######################################
+
+
+### 方法1：
+
+### communicate(input=None, timeout=None)：
+
+
+##  参数：
+
+##  input：将数据发送到 stdin。 从 stdout 和 stderr 读取数据，直到抵达文件结尾；
+
+##  timeout：如果进程在 timeout 秒后未终止，一个 TimeoutExpired 异常将被抛出
+
+
+
+
+## 注意：
+
+## 如果子进程输出了大量数据到stdout或者stderr的管道，并达到了系统pipe的缓存大小的话，将会产生死锁
+
+## 简单点说，就是使用 communicate() 而非 stdin.write，stdout.read 或者 stderr.read ，这三个的读写一旦输出数据过多就会堵死管道，产生死锁
+
+
+
+## 实例：
+
+p = subprocess.Popen('python.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
+
+
+output, error = p.communicate('print("中文")')   # 返回一个 (stdout_data, stderr_data) 元组，如果文件以文本模式（即 encoding 或 text 设置了）打开时则为字符串；否则字节
+
+
+print(output)
+
+print(p.returncode)     # 0，表示此进程已结束
+
+p.kill()                # 子进程自杀（communicate 执行完，进程就已结束）
+
+
+
+
+
+
+
+
+
+
+### 方法2：
+
+### terminate()：停止子进程
+
+### kill()：杀死子进程
+
+### poll(): 检查子进程是否结束，设置并返回 returncode
+
+
+
+### wait(timeout=None)：等待子进程结束，设置并返回 returncode;  
+
+##  注意：（该方法不建议使用，一般使用communicate）
+
+##  如果执行的命令是交互性的（如 windows 中，执行 python.exe 或者 nslookup 命令），则可能会导致一直wait()
+
+
+##  措施：
+
+##  如果进程在 timeout 秒后未中断，抛出一个 TimeoutExpired 异常
+
+
+
+
+
+
+
+
+# 实例：
+
+p = subprocess.Popen('python.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
+
+
+
+print(p.poll())         # None，此进程仍未结束
+
+output, error = p.communicate('print("中文")')      # 执行完命令后，进程结束
+
+
+print(p.wait(timeout = 1))         # 0，表示此进程已结束
+
+p.kill()   
+
+
+
+
+
+
+
+
+# 方法3：run（）：返回的是一个CompletedProcess类型对象
+
+
+# 常用参数：
+
+# timeout：当执行时间超时，子进程将被杀死，并弹出TimeoutExpired异常
+
+# check：当 returncode 不为0 时，弹出CalledProcessError异常
+
+
+
+
+
+
+######################################### Popen 常用属性：#######################################
+
+
+### pid：子进程的进程号
+
+#   注意：如果你设置了 shell 参数为 True，则这是生成的子 shell 的进程号
+
+
+
+
+### returncode：此进程的退出码（0 表示进程已结束，None 表示此进程仍未结束）
+
+
+
+
+
+####################################### 详细分析 #################################################
+
+
+
+注意： 如果子进程输出了大量数据到 stdout 或者 stderr 的管道，并达到了系统pipe的缓存大小的话，子进程会等待父进程读取管道，而父进程此时正wait着的话，将会产生传说中的死锁
+
+
+def test(size):
+
+    print('start')
+
+    cmd = 'dd if=/dev/urandom bs=1 count=%d 2>/dev/null' % size
+
+    p = subprocess.Popen(args=cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)        
+
+    p.wait()
+
+    print('end')
+
+
+
+# 64KB                  # linux 默认的 pipe size 是 64KB
+
+test(64 * 1024)         # start  end    ：使用 dd 产生了正好 64KB 的标准输出，由 subprocess.Popen调用，然后使用 wait() 等待 dd 调用结束。可以看到正确的 start 和 end 输出
+
+
+
+# 64KB + 1B
+
+test(64 * 1024 + 1)     # start     ：比 64KB 多的情况，这种情况下只输出了 start，也就是说程序执行卡在了 p.wait() 上，程序死锁
